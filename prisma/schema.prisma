@@ -16,18 +16,20 @@ model Contact {
   updatedAt DateTime @updatedAt
   firstName String
   lastName  String
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
+  owner     User     @relation(fields: [ownerId], references: [id])
+  ownerId   Int
   company   Company? @relation(fields: [companyId], references: [id])
   companyId Int?
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  email    String    @unique
-  name     String?
-  contacts Contact[]
-  role     String
+  id         Int       @id @default(autoincrement())
+  username   String    @unique
+  email      String    @unique
+  name       String?
+  contacts   Contact[]
+  role       String
+  department String
 }
 
 model Company {

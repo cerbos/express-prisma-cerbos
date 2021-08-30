@@ -18,6 +18,7 @@
   "homepage": "https://github.com/cerbos/express-prisma-cerbos#readme",
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/http-auth": "^4.1.1",
     "@types/node": "^16.7.6",
     "prisma": "^2.30.0",
     "ts-node": "^10.2.1",
@@ -25,6 +26,10 @@
   },
   "dependencies": {
     "@prisma/client": "^2.30.0",
-    "express": "^4.17.1"
+    "cerbos": "^0.0.3",
+    "express": "^4.17.1",
+    "express-basic-auth": "^1.2.0",
+    "http-auth": "^4.1.9",
+    "http-auth-connect": "^1.0.5"
   }
 }

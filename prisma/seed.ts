@@ -1,69 +1,102 @@
-// import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
-// const prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
-// const userData: Prisma.UserCreateInput[] = [
-//   {
-//     name: "Alice",
-//     email: "alice@prisma.io",
-//     posts: {
-//       create: [
-//         {
-//           title: "Join the Prisma Slack",
-//           content: "https://slack.prisma.io",
-//           published: true,
-//         },
-//       ],
-//     },
-//   },
-//   {
-//     name: "Nilu",
-//     email: "nilu@prisma.io",
-//     posts: {
-//       create: [
-//         {
-//           title: "Follow Prisma on Twitter",
-//           content: "https://www.twitter.com/prisma",
-//           published: true,
-//         },
-//       ],
-//     },
-//   },
-//   {
-//     name: "Mahmoud",
-//     email: "mahmoud@prisma.io",
-//     posts: {
-//       create: [
-//         {
-//           title: "Ask a question about Prisma on GitHub",
-//           content: "https://www.github.com/prisma/prisma/discussions",
-//           published: true,
-//         },
-//         {
-//           title: "Prisma on YouTube",
-//           content: "https://pris.ly/youtube",
-//         },
-//       ],
-//     },
-//   },
-// ];
+const userData: Prisma.UserCreateInput[] = [
+  {
+    name: "Alice",
+    username: "alice",
+    email: "alice@cerbos.demo",
+    role: "admin",
+    department: "IT",
+  },
+  {
+    name: "John",
+    username: "john",
+    email: "john@cerbos.demo",
+    role: "user",
+    department: "Sales",
+    contacts: {
+      connectOrCreate: {
+        where: {
+          id: 1,
+        },
+        create: {
+          firstName: "John",
+          lastName: "Smith",
+          company: {
+            create: {
+              name: "Coca Cola",
+            },
+          },
+        },
+      },
+    },
+  },
+  {
+    name: "Sarah",
+    username: "sarah",
+    email: "sarah@cerbos.demo",
+    role: "user",
+    department: "Sales",
+    contacts: {
+      connectOrCreate: [
+        {
+          where: {
+            id: 2,
+          },
+          create: {
+            firstName: "Mary",
+            lastName: "Jane",
+            company: {
+              create: {
+                name: "Pepsi Co",
+              },
+            },
+          },
+        },
+        {
+          where: {
+            id: 3,
+          },
+          create: {
+            firstName: "Christina",
+            lastName: "Baker",
+            company: {
+              create: {
+                name: "Capri Sun",
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+  {
+    name: "Geri",
+    username: "geri",
+    email: "geri@cerbos.demo",
+    role: "user",
+    department: "Marketing",
+  },
+];
 
-// async function main() {
-//   console.log(`Start seeding ...`);
-//   for (const u of userData) {
-//     const user = await prisma.user.create({
-//       data: u,
-//     });
-//     console.log(`Created user with id: ${user.id}`);
-//   }
-//   console.log(`Seeding finished.`);
-// }
+async function main() {
+  console.log(`Start seeding ...`);
+  for (const u of userData) {
+    const user = await prisma.user.create({
+      data: u,
+    });
+    console.log(`Created user with id: ${user.id}`);
+  }
+  console.log(`Seeding finished.`);
+}
 
-// main()
-//   .catch((e) => {
-//     console.error(e);
-//     process.exit(1);
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
