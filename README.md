@@ -2,6 +2,8 @@
 
 An example application of integrating [Cerbos](https://cerbos.dev) with an [Express](https://expressjs.com/) server using [Prisma](https://prisma.io/) as the ORM.
 
+This is based on the [REST API Express](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-express) example from Prisma.
+
 ## Dependencies
 
 - Node.js
