@@ -102,7 +102,10 @@ app.post("/contacts/new", async (req, res) => {
 
   // authorized for create action
   if (allowed.isAuthorized("new", "create")) {
-    return res.json({ result: "Created contact" });
+    const contact = await prisma.contact.create({
+      data: req.body,
+    });
+    return res.json({ result: "Created contact", contact });
   } else {
     return res.status(403).json({ error: "Unauthorized" });
   }
@@ -144,6 +147,12 @@ app.patch("/contacts/:id", async (req, res) => {
   });
 
   if (allowed.isAuthorized(req.params.id, "update")) {
+    await prisma.contact.update({
+      where: {
+        id: contact.id,
+      },
+      data: req.body,
+    });
     return res.json({
       result: `Updated contact ${req.params.id}`,
     });
