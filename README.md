@@ -56,7 +56,7 @@ Should you wish to experiment with this policy, you can <a href="https://play.ce
 
 <a href="https://play.cerbos.dev/p/ygW612cc9c9xXOsOZjI40ovY2LZvXf43" target="_blank"><img src="docs/launch.jpg" height="48" /></a>
 
-The policy expects one of two roles to be set on the principal - `admin` and `user` and an attribute which defines their department as either `IT`, `Sales` or `Marketing`.
+The [policy](./cerbos/policies/contact.yaml) expects one of two roles to be set on the principal - `admin` and `user` and an attribute which defines their department as either `IT`, `Sales` or `Marketing`.
 
 These roles are authorized as follows:
 
