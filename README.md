@@ -66,3 +66,17 @@ These roles are authorized as follows:
 | `delete` | Only if they own the contact being accessed | Y           |
 
 ## Example Requests
+
+### Get a contact
+
+As a Sales user => `200 OK`
+
+```
+curl -i http://john:password1234@localhost:3000/contacts/1
+```
+
+As a Marketing user => `403 Unauthorized`
+
+```
+curl -i http://geri:pwd123@localhost:3000/contacts/1
+```
