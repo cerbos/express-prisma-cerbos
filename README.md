@@ -1,6 +1,6 @@
 # express-prisma-cerbos
 
-An example application of integrating [Cerbos](https://cerbos.dev) with an [Express](https://expressjs.com/) server using [Prisma](https://prisma.io/) as the ORM.
+An example application of integrating [Cerbos](https://cerbos.dev) with an [Express](https://expressjs.com/) server using [Prisma](https://prisma.io/) as the ORM. Cerbos helps you super-charge your authorization implementation by writing context-aware access control policies for your application resources. Author access rules using an intuitive YAML configuration language, use your Git-ops infrastructure to test and deploy them and, make simple API requests to the Cerbos PDP to evaluate the policies and make dynamic access decisions.
 
 This is based on the [REST API Express](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-express) example from Prisma.
 
