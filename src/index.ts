@@ -32,6 +32,30 @@ const getUser = async (req: express.Request) => {
   });
 };
 
+app.get("/sales", async (req, res) => {
+  // Get the user
+  const user = await getUser(req);
+  if (!user) return res.status(404).json({error: "User not found"});
+  try {
+    const data = await cerbos.resourcesQueryPlan({
+      principal: {
+        id: `${user.id}`,
+        roles: [user.role],
+        attr: {
+          department: user.department,
+        },
+      },
+      resourceKind: "user",
+      action: "view:sales",
+    });
+
+    res.json(data);
+  }
+  catch (e) {
+    return res.status(500).json({error: "Internal server error"});
+  }
+})
+
 // READ
 app.get("/contacts/:id", async (req, res) => {
   // load the contact

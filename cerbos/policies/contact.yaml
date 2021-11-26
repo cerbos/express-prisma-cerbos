@@ -2,6 +2,20 @@
 apiVersion: api.cerbos.dev/v1
 resourcePolicy:
   version: default
+  resource: user
+  rules:
+  - actions: ["view:sales"]
+    effect: EFFECT_ALLOW
+    roles:
+      - manager
+    condition:
+      match:
+        expr: R.attr.department == "Sales"
+
+---
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: default
   resource: contact
   rules:
   - actions: ["*"]
@@ -23,4 +37,4 @@ resourcePolicy:
       - user 
     condition:
       match:
-        expr: request.resource.attr.ownerId == request.principal.id
+        expr: R.attr.ownerId == request.principal.id

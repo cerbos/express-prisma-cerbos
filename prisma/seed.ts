@@ -76,7 +76,7 @@ const userData: Prisma.UserCreateInput[] = [
     name: "Geri",
     username: "geri",
     email: "geri@cerbos.demo",
-    role: "user",
+    role: "manager",
     department: "Marketing",
   },
 ];
