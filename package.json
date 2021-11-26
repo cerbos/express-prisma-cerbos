@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@prisma/client": "^2.30.0",
-    "cerbos": "^0.0.3",
+    "cerbos": "cerbos/cerbos-sdk-node#feature\/query-plan",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
     "http-auth": "^4.1.9",
