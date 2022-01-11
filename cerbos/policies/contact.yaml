@@ -4,23 +4,29 @@ resourcePolicy:
   version: default
   resource: contact
   rules:
-  - actions: ["*"]
-    effect: EFFECT_ALLOW
-    roles:
-      - admin    
+    - actions: ["*"]
+      effect: EFFECT_ALLOW
+      roles:
+        - admin
 
-  - actions: ["read", "create"]
-    effect: EFFECT_ALLOW
-    roles:
-      - user
-    condition:
-      match:
-        expr: request.principal.attr.department == "Sales"
+    - actions: ["read", "create"]
+      effect: EFFECT_ALLOW
+      roles:
+        - user
+      condition:
+        match:
+          all:
+            of:
+              - expr: request.principal.attr.department == "Sales"
+              - any:
+                  of:
+                    - expr: request.resource.attr.ownerId == request.principal.id
+                    - expr: request.resource.attr.ownerId == "2"
 
-  - actions: ["update", "delete"]
-    effect: EFFECT_ALLOW
-    roles:
-      - user 
-    condition:
-      match:
-        expr: request.resource.attr.ownerId == request.principal.id
+    - actions: ["update", "delete"]
+      effect: EFFECT_ALLOW
+      roles:
+        - user
+      condition:
+        match:
+          expr: request.resource.attr.ownerId == request.principal.id

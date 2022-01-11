@@ -2,11 +2,13 @@ import { PrismaClient } from "@prisma/client";
 import express from "express";
 import { Cerbos } from "cerbos";
 import basicAuth from "express-basic-auth";
+import queryPlanToPrisma from "./adapter/queryPlanToPrisma";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ log: ["query", "info", "warn", "error"] });
 const app = express();
 const cerbos = new Cerbos({
   hostname: "http://localhost:3592", // The Cerbos PDP instance
+  logLevel: "debug",
 });
 
 app.use(express.json());
@@ -32,12 +34,47 @@ const getUser = async (req: express.Request) => {
   });
 };
 
+app.get("/contacts", async (req, res) => {
+  // Get the user
+  const user = await getUser(req);
+  if (!user) return res.status(404).json({ error: "User not found" });
+
+  const queryPlan = await cerbos.getQueryPlan({
+    action: "read",
+    resource: {
+      kind: "contact",
+    },
+    principal: {
+      id: `${user.id}`,
+      roles: [user.role],
+      attr: {
+        department: user.department,
+      },
+    },
+  });
+
+  const filters = queryPlanToPrisma({
+    plan: queryPlan,
+    fieldNameMapper: {
+      "request.resource.attr.ownerId": "ownerId",
+    },
+  });
+
+  const contacts = await prisma.contact.findMany({
+    where: {
+      AND: [filters],
+    },
+  });
+
+  return res.json({ contacts, queryPlan });
+});
+
 // READ
 app.get("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id),
+      id: req.params.id,
     },
     include: {
       company: true,
@@ -115,7 +152,7 @@ app.patch("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id),
+      id: req.params.id,
     },
     include: {
       company: true,
@@ -166,7 +203,7 @@ app.delete("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id),
+      id: req.params.id,
     },
     include: {
       company: true,
@@ -200,7 +237,7 @@ app.delete("/contacts/:id", async (req, res) => {
   if (allowed.isAuthorized(req.params.id, "delete")) {
     prisma.contact.delete({
       where: {
-        id: parseInt(req.params.id),
+        id: req.params.id,
       },
     });
     return res.json({
@@ -211,6 +248,6 @@ app.delete("/contacts/:id", async (req, res) => {
   }
 });
 
-const server = app.listen(3000, () =>
-  console.log(`🚀 Server ready at: http://localhost:3000`)
+const server = app.listen(3030, () =>
+  console.log(`🚀 Server ready at: http://localhost:3030`)
 );

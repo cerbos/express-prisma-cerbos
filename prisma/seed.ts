@@ -4,6 +4,7 @@ const prisma = new PrismaClient();
 
 const userData: Prisma.UserCreateInput[] = [
   {
+    id: "user1",
     name: "Alice",
     username: "alice",
     email: "alice@cerbos.demo",
@@ -11,6 +12,7 @@ const userData: Prisma.UserCreateInput[] = [
     department: "IT",
   },
   {
+    id: "user2",
     name: "John",
     username: "john",
     email: "john@cerbos.demo",
@@ -19,9 +21,11 @@ const userData: Prisma.UserCreateInput[] = [
     contacts: {
       connectOrCreate: {
         where: {
-          id: 1,
+          id: "user3",
         },
         create: {
+          id: "user3",
+          ownerId: "user2",
           firstName: "John",
           lastName: "Smith",
           company: {
@@ -34,6 +38,7 @@ const userData: Prisma.UserCreateInput[] = [
     },
   },
   {
+    id: "user4",
     name: "Sarah",
     username: "sarah",
     email: "sarah@cerbos.demo",
@@ -43,11 +48,13 @@ const userData: Prisma.UserCreateInput[] = [
       connectOrCreate: [
         {
           where: {
-            id: 2,
+            id: "user5",
           },
           create: {
+            id: "user5",
             firstName: "Mary",
             lastName: "Jane",
+            ownerId: "user4",
             company: {
               create: {
                 name: "Pepsi Co",
@@ -57,10 +64,12 @@ const userData: Prisma.UserCreateInput[] = [
         },
         {
           where: {
-            id: 3,
+            id: "user6",
           },
           create: {
+            id: "user6",
             firstName: "Christina",
+            ownerId: "user4",
             lastName: "Baker",
             company: {
               create: {
@@ -73,6 +82,7 @@ const userData: Prisma.UserCreateInput[] = [
     },
   },
   {
+    id: "user7",
     name: "Geri",
     username: "geri",
     email: "geri@cerbos.demo",
