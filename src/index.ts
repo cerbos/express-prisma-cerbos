@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import express from "express";
+import { PrismaClient, User } from "@prisma/client";
+import express, { NextFunction, Request, Response } from "express";
 import { Cerbos } from "cerbos";
 import basicAuth from "express-basic-auth";
 import queryPlanToPrisma from "./adapter/queryPlanToPrisma";
@@ -11,66 +11,87 @@ const cerbos = new Cerbos({
   logLevel: "debug",
 });
 
+declare global {
+  namespace Express {
+    interface Request {
+      user: User;
+    }
+  }
+}
+
 app.use(express.json());
 
 // Swap out for your authentication provider of choice
 app.use(
   basicAuth({
+    challenge: true,
     users: {
-      alice: "supersecret",
-      john: "password1234",
-      sarah: "asdfghjkl",
-      geri: "pwd123",
+      alice: "password", // role: admin, department: IT
+      john: "password", // role: user, department: Sales
+      sarah: "password", // role: user, department: Sales
+      geri: "password", // role: user, department: Markerting
     },
   })
 );
 
-const getUser = async (req: express.Request) => {
+app.use(async (req: Request, res: Response, next: NextFunction) => {
   const userAth: {
     user: string;
   } = (req as any).auth;
-  return await prisma.user.findUnique({
-    where: { username: userAth.user },
-  });
-};
+  try {
+    const user = await prisma.user.findUnique({
+      where: { username: userAth.user },
+    });
+    if (!user) {
+      throw Error("Not found");
+    }
+    req.user = user;
+    next();
+  } catch (e) {
+    return res.status(404).json({ error: "User not found" });
+  }
+});
 
 app.get("/contacts", async (req, res) => {
-  // Get the user
-  const user = await getUser(req);
-  if (!user) return res.status(404).json({ error: "User not found" });
-
+  // Fetch the query plan from Cerbos passing in the principal
+  // resource type and action
   const queryPlan = await cerbos.getQueryPlan({
-    action: "read",
+    principal: {
+      id: req.user.id,
+      roles: [req.user.role],
+      attr: {
+        department: req.user.department,
+      },
+    },
     resource: {
       kind: "contact",
     },
-    principal: {
-      id: `${user.id}`,
-      roles: [user.role],
-      attr: {
-        department: user.department,
-      },
-    },
+    action: "read",
   });
 
   const filters = queryPlanToPrisma({
-    plan: queryPlan,
+    queryPlan,
+    // map or function to change field names to match the prisma model
     fieldNameMapper: {
       "request.resource.attr.ownerId": "ownerId",
+      "request.resource.attr.department": "department",
     },
   });
 
+  // Pass the filters in as where conditions
+  // If you have prexisting where conditions, you can pass them in an AND clause
   const contacts = await prisma.contact.findMany({
-    where: {
-      AND: [filters],
-    },
+    where: filters,
   });
 
-  return res.json({ contacts, queryPlan });
+  return res.json(contacts);
 });
 
 // READ
 app.get("/contacts/:id", async (req, res) => {
+  // Get the user
+  if (!req.user) return res.status(404).json({ error: "User not found" });
+
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
@@ -82,17 +103,13 @@ app.get("/contacts/:id", async (req, res) => {
   });
   if (!contact) return res.status(404).json({ error: "Contact not found" });
 
-  // Get the user
-  const user = await getUser(req);
-  if (!user) return res.status(404).json({ error: "User not found" });
-
   // check user is authorized
   const allowed = await cerbos.check({
     principal: {
-      id: `${user.id}`,
-      roles: [user.role],
+      id: req.user.id,
+      roles: [req.user.role],
       attr: {
-        department: user.department,
+        department: req.user.department,
       },
     },
     resource: {
@@ -116,16 +133,14 @@ app.get("/contacts/:id", async (req, res) => {
 
 app.post("/contacts/new", async (req, res) => {
   // Get the user
-  const user = await getUser(req);
-  if (!user) return res.status(404).json({ error: "User not found" });
 
   // check user is authorized
   const allowed = await cerbos.check({
     principal: {
-      id: `${user.id}`,
-      roles: [user.role],
+      id: req.user.id,
+      roles: [req.user.role],
       attr: {
-        department: user.department,
+        department: req.user.department,
       },
     },
     resource: {
@@ -160,16 +175,12 @@ app.patch("/contacts/:id", async (req, res) => {
   });
   if (!contact) return res.status(404).json({ error: "Contact not found" });
 
-  // Get the user
-  const user = await getUser(req);
-  if (!user) return res.status(404).json({ error: "User not found" });
-
   const allowed = await cerbos.check({
     principal: {
-      id: `${user.id}`,
-      roles: [user.role],
+      id: req.user.id,
+      roles: [req.user.role],
       attr: {
-        department: user.department,
+        department: req.user.department,
       },
     },
     resource: {
@@ -211,16 +222,12 @@ app.delete("/contacts/:id", async (req, res) => {
   });
   if (!contact) return res.status(404).json({ error: "Contact not found" });
 
-  // Get the user
-  const user = await getUser(req);
-  if (!user) return res.status(404).json({ error: "User not found" });
-
   const allowed = await cerbos.check({
     principal: {
-      id: `${user.id}`,
-      roles: [user.role],
+      id: req.user.id,
+      roles: [req.user.role],
       attr: {
-        department: user.department,
+        department: req.user.department,
       },
     },
     resource: {

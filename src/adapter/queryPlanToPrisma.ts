@@ -7,7 +7,7 @@ import {
 } from "cerbos";
 
 interface QueryPlanToPrismaArgs {
-  plan: IQueryPlanResponse;
+  queryPlan: IQueryPlanResponse;
   fieldNameMapper:
     | {
         [key: string]: string;
@@ -16,11 +16,11 @@ interface QueryPlanToPrismaArgs {
 }
 
 export default function queryPlanToPrisma({
-  plan,
+  queryPlan,
   fieldNameMapper,
 }: QueryPlanToPrismaArgs): any {
   return mapOperand(
-    plan.filter,
+    queryPlan.filter,
     (key: string) => {
       if (typeof fieldNameMapper === "function") {
         return fieldNameMapper(key);

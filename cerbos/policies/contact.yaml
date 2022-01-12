@@ -15,13 +15,9 @@ resourcePolicy:
         - user
       condition:
         match:
-          all:
+          any:
             of:
-              - expr: request.principal.attr.department == "Sales"
-              - any:
-                  of:
-                    - expr: request.resource.attr.ownerId == request.principal.id
-                    - expr: request.resource.attr.ownerId == "2"
+              - expr: request.resource.attr.ownerId == request.principal.id
 
     - actions: ["update", "delete"]
       effect: EFFECT_ALLOW

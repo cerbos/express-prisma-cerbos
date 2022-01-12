@@ -16,11 +16,10 @@ model Contact {
   updatedAt DateTime @updatedAt
   firstName String
   lastName  String
-  owner     User     @relation(fields: [userId], references: [id])
+  owner     User     @relation(fields: [ownerId], references: [id])
   ownerId   String
   company   Company? @relation(fields: [companyId], references: [id])
   companyId String?
-  userId    String
 }
 
 model User {
@@ -34,7 +33,7 @@ model User {
 }
 
 model Company {
-  id        String    @id @default(uuid())
+  id        String    @id @default(cuid())
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   name      String
