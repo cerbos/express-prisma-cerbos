@@ -17,15 +17,30 @@ const userData: Prisma.UserCreateInput[] = [
     role: "user",
     department: "Sales",
     contacts: {
-      create: {
-        firstName: "Nick",
-        lastName: "Smithe",
-        company: {
-          create: {
-            name: "Coca Cola",
+      create: [
+        {
+          firstName: "Nick",
+          lastName: "Smyth",
+          marketingOptIn: true,
+          active: true,
+          company: {
+            create: {
+              name: "Coca Cola",
+            },
           },
         },
-      },
+        {
+          firstName: "Simon",
+          lastName: "Jaff",
+          marketingOptIn: true,
+          active: false,
+          company: {
+            create: {
+              name: "Legal Co",
+            },
+          },
+        },
+      ],
     },
   },
   {
@@ -39,6 +54,8 @@ const userData: Prisma.UserCreateInput[] = [
         {
           firstName: "Mary",
           lastName: "Jane",
+          active: true,
+          marketingOptIn: false,
           company: {
             create: {
               name: "Pepsi Co",
@@ -48,9 +65,22 @@ const userData: Prisma.UserCreateInput[] = [
         {
           firstName: "Christina",
           lastName: "Baker",
+          marketingOptIn: true,
+          active: false,
           company: {
             create: {
               name: "Capri Sun",
+            },
+          },
+        },
+        {
+          firstName: "Aleks",
+          lastName: "Kozlov",
+          marketingOptIn: true,
+          active: true,
+          company: {
+            create: {
+              name: "Pepsi Co",
             },
           },
         },

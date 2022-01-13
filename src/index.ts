@@ -4,20 +4,25 @@ import { Cerbos } from "cerbos";
 import basicAuth from "express-basic-auth";
 import queryPlanToPrisma from "./adapter/queryPlanToPrisma";
 
+declare global {
+  namespace Express {
+    interface Request {
+      user: User;
+      auth: {
+        user: string;
+      };
+    }
+  }
+}
+
 const prisma = new PrismaClient({ log: ["query", "info", "warn", "error"] });
-const app = express();
+
 const cerbos = new Cerbos({
   hostname: "http://localhost:3592", // The Cerbos PDP instance
   logLevel: "debug",
 });
 
-declare global {
-  namespace Express {
-    interface Request {
-      user: User;
-    }
-  }
-}
+const app = express();
 
 app.use(express.json());
 
@@ -35,12 +40,9 @@ app.use(
 );
 
 app.use(async (req: Request, res: Response, next: NextFunction) => {
-  const userAth: {
-    user: string;
-  } = (req as any).auth;
   try {
     const user = await prisma.user.findUnique({
-      where: { username: userAth.user },
+      where: { username: req.auth.user },
     });
     if (!user) {
       throw Error("Not found");
@@ -55,7 +57,7 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
 app.get("/contacts", async (req, res) => {
   // Fetch the query plan from Cerbos passing in the principal
   // resource type and action
-  const queryPlan = await cerbos.getQueryPlan({
+  const contactQueryPlan = await cerbos.getQueryPlan({
     principal: {
       id: req.user.id,
       roles: [req.user.role],
@@ -70,11 +72,13 @@ app.get("/contacts", async (req, res) => {
   });
 
   const filters = queryPlanToPrisma({
-    queryPlan,
+    queryPlan: contactQueryPlan,
     // map or function to change field names to match the prisma model
     fieldNameMapper: {
       "request.resource.attr.ownerId": "ownerId",
       "request.resource.attr.department": "department",
+      "request.resource.attr.active": "active",
+      "request.resource.attr.marketingOptIn": "marketingOptIn",
     },
   });
 
@@ -82,9 +86,32 @@ app.get("/contacts", async (req, res) => {
   // If you have prexisting where conditions, you can pass them in an AND clause
   const contacts = await prisma.contact.findMany({
     where: filters,
+    select: {
+      firstName: true,
+      lastName: true,
+      active: true,
+      marketingOptIn: true,
+    },
   });
 
-  return res.json(contacts);
+  if (req.query.debug) {
+    return res.json({
+      contacts,
+      principal: {
+        id: req.user.id,
+        roles: [req.user.role],
+        attr: {
+          department: req.user.department,
+        },
+      },
+      queryPlan: contactQueryPlan.filter,
+      prismaQuery: filters,
+    });
+  }
+
+  return res.json({
+    contacts,
+  });
 });
 
 // READ

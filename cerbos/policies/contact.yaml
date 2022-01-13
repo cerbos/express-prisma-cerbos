@@ -2,6 +2,8 @@
 apiVersion: api.cerbos.dev/v1
 resourcePolicy:
   version: default
+  importDerivedRoles:
+    - common_roles
   resource: contact
   rules:
     - actions: ["*"]
@@ -9,20 +11,32 @@ resourcePolicy:
       roles:
         - admin
 
-    - actions: ["read", "create"]
+    - actions: ["create"]
       effect: EFFECT_ALLOW
       roles:
         - user
       condition:
         match:
-          any:
-            of:
-              - expr: request.resource.attr.ownerId == request.principal.id
+          expr: request.principal.attr.department == "Sales"
 
-    - actions: ["update", "delete"]
+    - actions: ["read", "update", "delete"]
+      effect: EFFECT_ALLOW
+      derivedRoles:
+        - owner
+
+    - actions: ["read"]
       effect: EFFECT_ALLOW
       roles:
         - user
       condition:
         match:
-          expr: request.resource.attr.ownerId == request.principal.id
+          all:
+            of:
+              - expr: request.resource.attr.active == true
+              - any:
+                  of:
+                    - expr: request.principal.attr.department == "Sales"
+                    - all:
+                        of:
+                          - expr: request.principal.attr.department == "Marketing"
+                          - expr: request.resource.attr.marketingOptIn == true
