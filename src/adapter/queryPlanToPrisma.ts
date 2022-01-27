@@ -4,6 +4,7 @@ import {
   IQueryPlanExpression,
   IQueryPlanValue,
   IQueryPlanVariable,
+  QueryPlanKind,
 } from "cerbos";
 
 interface QueryPlanToPrismaArgs {
@@ -19,8 +20,10 @@ export default function queryPlanToPrisma({
   queryPlan,
   fieldNameMapper,
 }: QueryPlanToPrismaArgs): any {
+  if(queryPlan.filter.kind === QueryPlanKind.KIND_ALWAYS_ALLOWED) return {};
+  if(queryPlan.filter.kind === QueryPlanKind.KIND_ALWAYS_DENIED) return {"1":{"equals":0}};
   return mapOperand(
-    queryPlan.filter,
+    queryPlan.filter.condition,
     (key: string) => {
       if (typeof fieldNameMapper === "function") {
         return fieldNameMapper(key);
