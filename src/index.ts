@@ -151,7 +151,7 @@ app.get("/contacts/:id", async (req, res) => {
   });
 
   // authorized for read action
-  if (allowed.isAuthorized(`${contact.id}`, "read")) {
+  if (allowed.isAuthorized(contact.id, "read")) {
     return res.json(contact);
   } else {
     return res.status(403).json({ error: "Unauthorized" });
