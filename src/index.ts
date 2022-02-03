@@ -2,7 +2,7 @@ import { PrismaClient, User } from "@prisma/client";
 import express, { NextFunction, Request, Response } from "express";
 import { Cerbos } from "cerbos";
 import basicAuth from "express-basic-auth";
-import queryPlanToPrisma from "./adapter/queryPlanToPrisma";
+import queryPlanToPrisma from "cerbos-orm-prisma";
 
 declare global {
   namespace Express {
