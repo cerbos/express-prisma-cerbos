@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
-import { Cerbos } from "cerbos";
+import { Cerbos } from "@cerbos/sdk";
 import basicAuth from "express-basic-auth";
 
 const prisma = new PrismaClient();
@@ -37,7 +37,7 @@ app.get("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id),
+      id: parseInt(req.params.id) + '',
     },
     include: {
       company: true,
@@ -115,7 +115,7 @@ app.patch("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id),
+      id: parseInt(req.params.id) + '',
     },
     include: {
       company: true,
@@ -166,7 +166,7 @@ app.delete("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id),
+      id: parseInt(req.params.id) + '',
     },
     include: {
       company: true,
@@ -200,7 +200,7 @@ app.delete("/contacts/:id", async (req, res) => {
   if (allowed.isAuthorized(req.params.id, "delete")) {
     prisma.contact.delete({
       where: {
-        id: parseInt(req.params.id),
+        id: parseInt(req.params.id) + '',
       },
     });
     return res.json({
