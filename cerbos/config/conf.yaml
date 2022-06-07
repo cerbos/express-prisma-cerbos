@@ -1,5 +1,6 @@
 ---
 server:
+  grpcListenAddr: ":3593"
   httpListenAddr: ":3592"
 storage:
   driver: "disk" # Valid values are "disk" or "git"
