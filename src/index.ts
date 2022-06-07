@@ -1,13 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
-import { Cerbos } from "@cerbos/sdk";
+import { GRPC } from "@cerbos/grpc";
 import basicAuth from "express-basic-auth";
 
 const prisma = new PrismaClient();
 const app = express();
-const cerbos = new Cerbos({
-  hostname: "http://localhost:3592", // The Cerbos PDP instance
-});
+const cerbos = new GRPC("localhost:3592", { tls: false });
 
 app.use(express.json());
 
@@ -37,7 +35,7 @@ app.get("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id) + '',
+      id: parseInt(req.params.id),
     },
     include: {
       company: true,
@@ -50,27 +48,42 @@ app.get("/contacts/:id", async (req, res) => {
   if (!user) return res.status(404).json({ error: "User not found" });
 
   // check user is authorized
-  const allowed = await cerbos.check({
+  const decision = await cerbos.checkResource({
     principal: {
       id: `${user.id}`,
       roles: [user.role],
-      attr: {
+      attributes: {
         department: user.department,
       },
     },
     resource: {
       kind: "contact",
-      instances: {
-        [contact.id]: {
-          attr: contact,
-        },
-      },
+      id: contact.id + '',
+      attributes: JSON.parse(JSON.stringify(contact)),
     },
     actions: ["read"],
   });
 
+  console.log({
+    principal: {
+      id: `${user.id}`,
+      roles: [user.role],
+      attributes: {
+        department: user.department,
+      },
+    },
+    resource: {
+      kind: "contact",
+      id: contact.id + '',
+      attributes: JSON.parse(JSON.stringify(contact)),
+    },
+    actions: ["read"],
+  })
+
+  console.log(decision)
+
   // authorized for read action
-  if (allowed.isAuthorized(`${contact.id}`, "read")) {
+  if (decision.isAllowed("read")) {
     return res.json(contact);
   } else {
     return res.status(403).json({ error: "Unauthorized" });
@@ -83,25 +96,23 @@ app.post("/contacts/new", async (req, res) => {
   if (!user) return res.status(404).json({ error: "User not found" });
 
   // check user is authorized
-  const allowed = await cerbos.check({
+  const allowed = await cerbos.checkResource({
     principal: {
       id: `${user.id}`,
       roles: [user.role],
-      attr: {
+      attributes: {
         department: user.department,
       },
     },
     resource: {
       kind: "contact",
-      instances: {
-        new: {},
-      },
+      id: "new"
     },
     actions: ["create"],
   });
 
   // authorized for create action
-  if (allowed.isAuthorized("new", "create")) {
+  if (allowed.isAllowed("create")) {
     const contact = await prisma.contact.create({
       data: req.body,
     });
@@ -115,7 +126,7 @@ app.patch("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id) + '',
+      id: parseInt(req.params.id),
     },
     include: {
       company: true,
@@ -127,26 +138,23 @@ app.patch("/contacts/:id", async (req, res) => {
   const user = await getUser(req);
   if (!user) return res.status(404).json({ error: "User not found" });
 
-  const allowed = await cerbos.check({
+  const allowed = await cerbos.checkResource({
     principal: {
       id: `${user.id}`,
       roles: [user.role],
-      attr: {
+      attributes: {
         department: user.department,
       },
     },
     resource: {
       kind: "contact",
-      instances: {
-        [contact.id]: {
-          attr: contact,
-        },
-      },
+      id: contact.id + '',
+      attributes: JSON.parse(JSON.stringify(contact)),
     },
     actions: ["update"],
   });
 
-  if (allowed.isAuthorized(req.params.id, "update")) {
+  if (allowed.isAllowed("update")) {
     await prisma.contact.update({
       where: {
         id: contact.id,
@@ -166,7 +174,7 @@ app.delete("/contacts/:id", async (req, res) => {
   // load the contact
   const contact = await prisma.contact.findUnique({
     where: {
-      id: parseInt(req.params.id) + '',
+      id: parseInt(req.params.id),
     },
     include: {
       company: true,
@@ -178,29 +186,26 @@ app.delete("/contacts/:id", async (req, res) => {
   const user = await getUser(req);
   if (!user) return res.status(404).json({ error: "User not found" });
 
-  const allowed = await cerbos.check({
+  const allowed = await cerbos.checkResource({
     principal: {
       id: `${user.id}`,
       roles: [user.role],
-      attr: {
+      attributes: {
         department: user.department,
       },
     },
     resource: {
       kind: "contact",
-      instances: {
-        [contact.id]: {
-          attr: contact,
-        },
-      },
+      id: contact.id + '',
+      attributes: JSON.parse(JSON.stringify(contact)),
     },
     actions: ["delete"],
   });
 
-  if (allowed.isAuthorized(req.params.id, "delete")) {
+  if (allowed.isAllowed("delete")) {
     prisma.contact.delete({
       where: {
-        id: parseInt(req.params.id) + '',
+        id: parseInt(req.params.id),
       },
     });
     return res.json({
