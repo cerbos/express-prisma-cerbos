@@ -17,20 +17,30 @@ const userData: Prisma.UserCreateInput[] = [
     role: "user",
     department: "Sales",
     contacts: {
-      connectOrCreate: {
-        where: {
-          id: 1,
-        },
-        create: {
-          firstName: "John",
-          lastName: "Smith",
+      create: [
+        {
+          firstName: "Nick",
+          lastName: "Smyth",
+          marketingOptIn: true,
+          active: true,
           company: {
             create: {
               name: "Coca Cola",
             },
           },
         },
-      },
+        {
+          firstName: "Simon",
+          lastName: "Jaff",
+          marketingOptIn: true,
+          active: false,
+          company: {
+            create: {
+              name: "Legal Co",
+            },
+          },
+        },
+      ],
     },
   },
   {
@@ -40,32 +50,37 @@ const userData: Prisma.UserCreateInput[] = [
     role: "user",
     department: "Sales",
     contacts: {
-      connectOrCreate: [
+      create: [
         {
-          where: {
-            id: 2,
-          },
-          create: {
-            firstName: "Mary",
-            lastName: "Jane",
-            company: {
-              create: {
-                name: "Pepsi Co",
-              },
+          firstName: "Mary",
+          lastName: "Jane",
+          active: true,
+          marketingOptIn: false,
+          company: {
+            create: {
+              name: "Pepsi Co",
             },
           },
         },
         {
-          where: {
-            id: 3,
+          firstName: "Christina",
+          lastName: "Baker",
+          marketingOptIn: true,
+          active: false,
+          company: {
+            create: {
+              name: "Capri Sun",
+            },
           },
-          create: {
-            firstName: "Christina",
-            lastName: "Baker",
-            company: {
-              create: {
-                name: "Capri Sun",
-              },
+        },
+        {
+          firstName: "Aleks",
+          lastName: "Kozlov",
+          marketingOptIn: true,
+          active: true,
+          company: {
+            create: {
+              name: "Pepsi Co",
             },
           },
         },

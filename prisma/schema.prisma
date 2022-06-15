@@ -11,19 +11,21 @@ generator client {
 }
 
 model Contact {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  firstName String
-  lastName  String
-  owner     User     @relation(fields: [ownerId], references: [id])
-  ownerId   Int
-  company   Company? @relation(fields: [companyId], references: [id])
-  companyId Int?
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  firstName      String
+  lastName       String
+  owner          User     @relation(fields: [ownerId], references: [id])
+  ownerId        String
+  company        Company? @relation(fields: [companyId], references: [id])
+  companyId      String?
+  active         Boolean  @default(false)
+  marketingOptIn Boolean  @default(false)
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(cuid())
   username   String    @unique
   email      String    @unique
   name       String?
@@ -33,7 +35,7 @@ model User {
 }
 
 model Company {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(cuid())
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   name      String

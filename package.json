@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts"
+    "dev": "nodemon --watch 'src/**' --ext 'ts,json' --ignore 'src/**/*.spec.ts' --exec 'ts-node src/index.ts'"
   },
   "repository": {
     "type": "git",
@@ -26,11 +26,14 @@
   },
   "dependencies": {
     "@cerbos/grpc": "^0.5.1",
+    "@cerbos/orm-prisma": "^0.1.1",
     "@prisma/client": "^3.14.0",
+    "cerbos-orm-prisma": "^0.1.1",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
     "http-auth": "^4.1.9",
-    "http-auth-connect": "^1.0.5"
+    "http-auth-connect": "^1.0.5",
+    "nodemon": "^2.0.16"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
