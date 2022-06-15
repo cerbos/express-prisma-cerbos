@@ -69,6 +69,22 @@ These roles are authorized as follows:
 
 ## Example Requests
 
+### Get all contact
+
+As a Sales user => `200 OK`
+
+```
+curl -i http://john:password1234@localhost:3000/contacts
+```
+
+As a Marketing user => `403 Unauthorized`
+
+```
+curl -i http://geri:pwd123@localhost:3000/contacts
+```
+
+
+
 ### Get a contact
 
 As a Sales user => `200 OK`

@@ -2,7 +2,7 @@ import { PrismaClient, User } from "@prisma/client";
 import express, { NextFunction, Request, Response } from "express";
 import { GRPC } from "@cerbos/grpc";
 import basicAuth from "express-basic-auth";
-import queryPlanToPrisma from "cerbos-orm-prisma";
+import queryPlanToPrisma from "@cerbos/orm-prisma";
 
 declare global {
   namespace Express {
@@ -27,10 +27,10 @@ app.use(
   basicAuth({
     challenge: true,
     users: {
-      alice: "password", // role: admin, department: IT
-      john: "password", // role: user, department: Sales
-      sarah: "password", // role: user, department: Sales
-      geri: "password", // role: user, department: Markerting
+      alice: "supersecret", // role: admin, department: IT
+      john: "password1234", // role: user, department: Sales
+      sarah: "asdfghjkl", // role: user, department: Sales
+      geri: "pwd123", // role: user, department: Markerting
     },
   })
 );
@@ -55,7 +55,7 @@ app.get("/contacts", async (req, res) => {
   // resource type and action
   const contactQueryPlan = await cerbos.planResources({
     principal: {
-      id: req.user.id + '',
+      id: req.user.id,
       roles: [req.user.role],
       attributes: {
         department: req.user.department,
@@ -66,6 +66,7 @@ app.get("/contacts", async (req, res) => {
     },
     action: "read",
   });
+
 
   const filters = queryPlanToPrisma({
     queryPlan: contactQueryPlan,
@@ -81,7 +82,9 @@ app.get("/contacts", async (req, res) => {
   // Pass the filters in as where conditions
   // If you have prexisting where conditions, you can pass them in an AND clause
   const contacts = await prisma.contact.findMany({
-    where: filters,
+    where: {
+      AND: filters
+    },
     select: {
       firstName: true,
       lastName: true,
@@ -293,6 +296,6 @@ app.delete("/contacts/:id", async ({ user, params }, res) => {
   }
 });
 
-const server = app.listen(3030, () =>
-  console.log(`🚀 Server ready at: http://localhost:3030`)
+const server = app.listen(3000, () =>
+  console.log(`🚀 Server ready at: http://localhost:3000`)
 );
