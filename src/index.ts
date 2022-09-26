@@ -2,7 +2,7 @@ import { PrismaClient, User } from "@prisma/client";
 import express, { NextFunction, Request, Response } from "express";
 import { GRPC } from "@cerbos/grpc";
 import basicAuth from "express-basic-auth";
-import queryPlanToPrisma from "@cerbos/orm-prisma";
+import { queryPlanToPrisma, PlanKind } from "@cerbos/orm-prisma";
 
 declare global {
   namespace Express {
@@ -68,7 +68,7 @@ app.get("/contacts", async (req, res) => {
   });
 
 
-  const filters = queryPlanToPrisma({
+  const queryPlanResult = queryPlanToPrisma({
     queryPlan: contactQueryPlan,
     // map or function to change field names to match the prisma model
     fieldNameMapper: {
@@ -79,19 +79,25 @@ app.get("/contacts", async (req, res) => {
     },
   });
 
-  // Pass the filters in as where conditions
-  // If you have prexisting where conditions, you can pass them in an AND clause
-  const contacts = await prisma.contact.findMany({
-    where: {
-      AND: filters
-    },
-    select: {
-      firstName: true,
-      lastName: true,
-      active: true,
-      marketingOptIn: true,
-    },
-  });
+  let contacts: any[];
+
+  if (queryPlanResult.kind === PlanKind.ALWAYS_DENIED) {
+    contacts = [];
+  } else {
+    // Pass the filters in as where conditions
+    // If you have prexisting where conditions, you can pass them in an AND clause
+    contacts = await prisma.contact.findMany({
+      where: {
+        AND: queryPlanResult.filters
+      },
+      select: {
+        firstName: true,
+        lastName: true,
+        active: true,
+        marketingOptIn: true,
+      },
+    });
+  }
 
   if (req.query.debug) {
     return res.json({
@@ -104,13 +110,13 @@ app.get("/contacts", async (req, res) => {
         },
       },
       queryPlan: contactQueryPlan,
-      prismaQuery: filters,
+      prismaQuery: queryPlanResult,
+    });
+  } else {
+    return res.json({
+      contacts,
     });
   }
-
-  return res.json({
-    contacts,
-  });
 });
 
 // READ
