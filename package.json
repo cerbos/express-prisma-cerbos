@@ -33,7 +33,7 @@
     "express-basic-auth": "^1.2.0",
     "http-auth": "^4.1.9",
     "http-auth-connect": "^1.0.5",
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.20"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
