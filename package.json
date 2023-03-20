@@ -28,7 +28,7 @@
     "@cerbos/grpc": "^0.5.1",
     "@cerbos/orm-prisma": "^1.0.0-alpha.0",
     "@prisma/client": "^3.14.0",
-    "cerbos-orm-prisma": "^0.1.1",
+    "cerbos-orm-prisma": "^0.0.2",
     "express": "^4.17.3",
     "express-basic-auth": "^1.2.0",
     "http-auth": "^4.1.9",
