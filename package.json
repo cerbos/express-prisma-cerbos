@@ -25,7 +25,7 @@
     "typescript": "^4.7.3"
   },
   "dependencies": {
-    "@cerbos/grpc": "^0.5.1",
+    "@cerbos/grpc": "^0.9.0",
     "@cerbos/orm-prisma": "^1.0.0-alpha.0",
     "@prisma/client": "^3.14.0",
     "cerbos-orm-prisma": "^0.0.2",
