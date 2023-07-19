@@ -1,6 +1,6 @@
 import { PrismaClient, User } from "@prisma/client";
 import express, { NextFunction, Request, Response } from "express";
-import { GRPC } from "@cerbos/grpc";
+import { GRPC as Cerbos } from "@cerbos/grpc";
 import basicAuth from "express-basic-auth";
 import { queryPlanToPrisma, PlanKind } from "@cerbos/orm-prisma";
 
@@ -16,7 +16,7 @@ declare global {
 }
 
 const prisma = new PrismaClient({ log: ["query", "info", "warn", "error"] });
-const cerbos = new GRPC("localhost:3592", { tls: false });
+const cerbos = new Cerbos("localhost:3592", { tls: false });
 
 const app = express();
 
