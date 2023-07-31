@@ -28,7 +28,6 @@ npm install
 
 ```
 npx prisma migrate dev --name init
-npx prisma db seed
 ```
 
 4. Start the express server
@@ -82,8 +81,6 @@ As a Marketing user => `403 Unauthorized`
 ```
 curl -i http://geri:pwd123@localhost:3000/contacts
 ```
-
-
 
 ### Get a contact
 
