@@ -29,7 +29,7 @@
     "@cerbos/orm-prisma": "^1.0.0-alpha.0",
     "@prisma/client": "^5.0.0",
     "cerbos-orm-prisma": "^0.0.2",
-    "express": "^4.17.3",
+    "express": "^4.21.0",
     "express-basic-auth": "^1.2.0",
     "http-auth": "^4.1.9",
     "http-auth-connect": "^1.0.5",
