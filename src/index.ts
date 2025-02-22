@@ -67,15 +67,22 @@ app.get("/contacts", async (req, res) => {
     action: "read",
   });
 
-
   const queryPlanResult = queryPlanToPrisma({
     queryPlan: contactQueryPlan,
     // map or function to change field names to match the prisma model
-    fieldNameMapper: {
-      "request.resource.attr.ownerId": "ownerId",
-      "request.resource.attr.department": "department",
-      "request.resource.attr.active": "active",
-      "request.resource.attr.marketingOptIn": "marketingOptIn",
+    mapper: {
+      "request.resource.attr.ownerId": {
+        field: "ownerId",
+      },
+      "request.resource.attr.department": {
+        field: "department",
+      },
+      "request.resource.attr.active": {
+        field: "active",
+      },
+      "request.resource.attr.marketingOptIn": {
+        field: "marketingOptIn",
+      },
     },
   });
 
@@ -88,7 +95,7 @@ app.get("/contacts", async (req, res) => {
     // If you have prexisting where conditions, you can pass them in an AND clause
     contacts = await prisma.contact.findMany({
       where: {
-        AND: queryPlanResult.filters
+        AND: [{ ...queryPlanResult.filters }],
       },
       select: {
         firstName: true,
@@ -147,7 +154,7 @@ app.get("/contacts/:id", async ({ user, params }, res) => {
     },
     resource: {
       kind: "contact",
-      id: contact.id + '',
+      id: contact.id + "",
       attributes: JSON.parse(JSON.stringify(contact)),
     },
     actions: ["read"],
@@ -163,13 +170,13 @@ app.get("/contacts/:id", async ({ user, params }, res) => {
     },
     resource: {
       kind: "contact",
-      id: contact.id + '',
+      id: contact.id + "",
       attributes: JSON.parse(JSON.stringify(contact)),
     },
     actions: ["read"],
-  })
+  });
 
-  console.log(decision)
+  console.log(decision);
 
   // authorized for read action
   if (decision.isAllowed("read")) {
@@ -193,7 +200,7 @@ app.post("/contacts/new", async ({ user, body }, res) => {
     },
     resource: {
       kind: "contact",
-      id: "new"
+      id: "new",
     },
     actions: ["create"],
   });
@@ -234,7 +241,7 @@ app.patch("/contacts/:id", async ({ user, params, body }, res) => {
     },
     resource: {
       kind: "contact",
-      id: contact.id + '',
+      id: contact.id + "",
       attributes: JSON.parse(JSON.stringify(contact)),
     },
     actions: ["update"],
@@ -282,7 +289,7 @@ app.delete("/contacts/:id", async ({ user, params }, res) => {
     },
     resource: {
       kind: "contact",
-      id: contact.id + '',
+      id: contact.id + "",
       attributes: JSON.parse(JSON.stringify(contact)),
     },
     actions: ["delete"],
