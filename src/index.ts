@@ -86,11 +86,20 @@ app.get("/contacts", async (req, res) => {
     },
   });
 
-  let contacts: any[];
+  let contacts: any[] = [];
 
   if (queryPlanResult.kind === PlanKind.ALWAYS_DENIED) {
     contacts = [];
-  } else {
+  } else if (queryPlanResult.kind === PlanKind.ALWAYS_ALLOWED) {
+    contacts = await prisma.contact.findMany({
+      select: {
+        firstName: true,
+        lastName: true,
+        active: true,
+        marketingOptIn: true,
+      },
+    });
+  } else if (queryPlanResult.kind === PlanKind.CONDITIONAL) {
     // Pass the filters in as where conditions
     // If you have prexisting where conditions, you can pass them in an AND clause
     contacts = await prisma.contact.findMany({
