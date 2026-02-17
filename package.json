@@ -20,14 +20,14 @@
     "@types/express": "^5.0.0",
     "@types/http-auth": "^4.1.1",
     "@types/node": "^22.0.0",
-    "prisma": "^6.0.0",
+    "prisma": "^7.0.0",
     "ts-node": "^10.8.1",
     "typescript": "^5.0.0"
   },
   "dependencies": {
     "@cerbos/grpc": "^0.25.0",
     "@cerbos/orm-prisma": "^2.0.1",
-    "@prisma/client": "^6.0.0",
+    "@prisma/client": "^7.0.0",
     "express": "^5.0.0",
     "express-basic-auth": "^1.2.0",
     "http-auth": "^4.1.9",
