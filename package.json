@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@cerbos/grpc": "^0.25.0",
-    "@cerbos/orm-prisma": "^2.0.1",
+    "@cerbos/orm-prisma": "^3.0.0",
     "@prisma/client": "^6.0.0",
     "express": "^5.0.0",
     "express-basic-auth": "^1.2.0",
