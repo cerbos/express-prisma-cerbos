@@ -26,6 +26,8 @@ npm install
 
 3. Setup Prisma and seed the database
 
+This project uses Prisma 7, which reads the database connection URL from `prisma.config.ts` (defaulting to `file:./prisma/dev.db`). To point at a different database, set the `DATABASE_URL` environment variable (e.g. in a `.env` file).
+
 ```
 npx prisma migrate dev --name init
 ```

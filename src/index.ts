@@ -1,4 +1,5 @@
 import { PrismaClient, User } from "@prisma/client";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import express, { NextFunction, Request, Response } from "express";
 import { GRPC as Cerbos } from "@cerbos/grpc";
 import basicAuth from "express-basic-auth";
@@ -15,7 +16,13 @@ declare global {
   }
 }
 
-const prisma = new PrismaClient({ log: ["query", "info", "warn", "error"] });
+const adapter = new PrismaBetterSqlite3({
+  url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
+});
+const prisma = new PrismaClient({
+  adapter,
+  log: ["query", "info", "warn", "error"],
+});
 const cerbos = new Cerbos("localhost:3592", { tls: false });
 
 const app = express();
